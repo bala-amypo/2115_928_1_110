@@ -29,3 +29,4 @@ public class ResourceRequest {
 
     // getters and setters
 }
+`
