@@ -1,7 +1,9 @@
-package com.example.demo.entity;
+package com.example.demo.Entity;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class ResourceRequest {
@@ -10,23 +12,51 @@ public class ResourceRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String resourceType;
-
-    @ManyToOne
-    private User requestedBy;
-
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String purpose;
+    private String resourceName;
+    private int quantity;
     private String status;
 
-    @PrePersist
-    public void onCreate() {
-        if (this.status == null) {
-            this.status = "PENDING";
-        }
+    // Default constructor
+    public ResourceRequest() {
     }
 
-    // getters and setters
+    // Parameterized constructor
+    public ResourceRequest(String resourceName, int quantity, String status) {
+        this.resourceName = resourceName;
+        this.quantity = quantity;
+        this.status = status;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
-`
