@@ -1,12 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users")
 public class User {
 
     @Id
@@ -14,15 +11,45 @@ public class User {
     private Long id;
 
     private String fullName;
+
+    @Column(unique = true)
     private String email;
+
     private String role;
-    private LocalDateTime createdAt;
 
     @PrePersist
-    void onCreate() {
-        if (role == null) role = "USER";
-        this.createdAt = LocalDateTime.now();
+    public void setDefaultRole() {
+        if (this.role == null) {
+            this.role = "USER";
+        }
     }
 
     // getters & setters
+    public Long getId() {
+        return id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

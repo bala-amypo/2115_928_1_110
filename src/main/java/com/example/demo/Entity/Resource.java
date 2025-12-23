@@ -1,12 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "resources", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "resourceName")
-})
 public class Resource {
 
     @Id
@@ -14,16 +10,47 @@ public class Resource {
     private Long id;
 
     private String resourceName;
+
     private String resourceType;
+
     private Integer capacity;
+
     private String location;
 
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    void onCreate() {
-        this.createdAt = LocalDateTime.now();
+    // getters & setters
+    public Long getId() {
+        return id;
     }
 
-    // getters & setters
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
+    public String getResourceType() {
+        return resourceType;
+    }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 }
