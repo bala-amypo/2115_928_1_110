@@ -3,28 +3,42 @@ package com.example.demo.service;
 import com.example.demo.entity.User;
 import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service   // ⭐ THIS FIXES YOUR ERROR
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    // Constructor Injection
+    public UserService(UserRepository repository) {
+        this.repository = repository;
     }
 
-    public User registerUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ValidationException("User already exists");
+    // Create user
+    public User createUser(User user) {
+
+        if (user == null) {
+            throw new ValidationException("User cannot be null");
         }
-        return userRepository.save(user);
+
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new ValidationException("Email is required");
+        }
+
+        return repository.save(user);
     }
 
-    public User getUser(Long id) {
-        return userRepository.findById(id).orElseThrow();
-    }
-
+    // Get all users
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return repository.findAll();
+    }
+
+    // Get user by id
+    public User getUserById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
