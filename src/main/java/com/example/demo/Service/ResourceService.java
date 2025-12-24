@@ -3,22 +3,40 @@ package com.example.demo.service;
 import com.example.demo.entity.Resource;
 import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.ResourceRepository;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Service   // ⭐ THIS WAS MISSING
 public class ResourceService {
 
-    private final ResourceRepository resourceRepository;
+    private final ResourceRepository repository;
 
-    public ResourceService(ResourceRepository resourceRepository) {
-        this.resourceRepository = resourceRepository;
+    // Constructor Injection
+    public ResourceService(ResourceRepository repository) {
+        this.repository = repository;
     }
 
+    // Create Resource
     public Resource createResource(Resource resource) {
-        if (resourceRepository.existsByResourceName(resource.getResourceName())) {
-            throw new ValidationException("Resource already exists");
+
+        if (resource == null) {
+            throw new ValidationException("Resource cannot be null");
         }
-        if (resource.getCapacity() < 1) {
-            throw new ValidationException("Capacity invalid");
+
+        if (resource.getResourceName() == null || resource.getResourceName().isEmpty()) {
+            throw new ValidationException("Resource name is required");
         }
-        return resourceRepository.save(resource);
+
+        if (resource.getCapacity() <= 0) {
+            throw new ValidationException("Capacity must be greater than 0");
+        }
+
+        return repository.save(resource);
+    }
+
+    // Get all resources
+    public List<Resource> getAllResources() {
+        return repository.findAll();
     }
 }

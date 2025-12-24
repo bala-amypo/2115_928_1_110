@@ -1,25 +1,48 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.ResourceRequest;
+import com.example.demo.entity.User;
 import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.ResourceRequestRepository;
-import com.example.demo.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service   // ⭐ VERY IMPORTANT
 public class ResourceRequestService {
 
-    private final ResourceRequestRepository requestRepository;
-    private final UserRepository userRepository;
+    private final ResourceRequestRepository repository;
 
-    public ResourceRequestService(ResourceRequestRepository r, UserRepository u) {
-        this.requestRepository = r;
-        this.userRepository = u;
+    // Constructor Injection
+    public ResourceRequestService(ResourceRequestRepository repository) {
+        this.repository = repository;
     }
 
-    public ResourceRequest createRequest(Long userId, ResourceRequest request) {
-        if (request.getStartTime().isAfter(request.getEndTime())) {
-            throw new ValidationException("Time error");
+    // Create resource request
+    public ResourceRequest createRequest(ResourceRequest request, User user) {
+
+        if (request == null) {
+            throw new ValidationException("Request cannot be null");
         }
-        request.setRequestedBy(userRepository.findById(userId).orElseThrow());
-        return requestRepository.save(request);
+
+        if (request.getStartTime() == null || request.getEndTime() == null) {
+            throw new ValidationException("Start time and End time are required");
+        }
+
+        if (request.getEndTime().isBefore(request.getStartTime())) {
+            throw new ValidationException("End time must be after start time");
+        }
+
+        request.setRequestedBy(user);
+        request.setRequestedAt(LocalDateTime.now());
+        request.setStatus("PENDING");
+
+        return repository.save(request);
+    }
+
+    // Get all requests
+    public List<ResourceRequest> getAllRequests() {
+        return repository.findAll();
     }
 }
