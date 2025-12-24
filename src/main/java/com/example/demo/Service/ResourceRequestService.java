@@ -6,20 +6,18 @@ import com.example.demo.exception.ValidationException;
 import com.example.demo.repository.ResourceRequestRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Service   // ⭐ VERY IMPORTANT
+@Service
 public class ResourceRequestService {
 
     private final ResourceRequestRepository repository;
 
-    // Constructor Injection
     public ResourceRequestService(ResourceRequestRepository repository) {
         this.repository = repository;
     }
 
-    // Create resource request
+    // Create request
     public ResourceRequest createRequest(ResourceRequest request, User user) {
 
         if (request == null) {
@@ -35,7 +33,6 @@ public class ResourceRequestService {
         }
 
         request.setRequestedBy(user);
-        request.setRequestedAt(LocalDateTime.now());
         request.setStatus("PENDING");
 
         return repository.save(request);

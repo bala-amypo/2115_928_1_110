@@ -1,52 +1,32 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.ResourceRequest;
-import com.example.demo.repository.ResourceRequestRepository;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.ResourceRequestService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping("/requests")
 public class ResourceRequestController {
 
-    private final ResourceRequestService service;
-    private final ResourceRequestRepository repository;
+    private final ResourceRequestService resourceRequestService;
+    private final UserRepository userRepository;
 
-    public ResourceRequestController(ResourceRequestService service,
-                                     ResourceRequestRepository repository) {
-        this.service = service;
-        this.repository = repository;
+    public ResourceRequestController(ResourceRequestService resourceRequestService,
+                                     UserRepository userRepository) {
+        this.resourceRequestService = resourceRequestService;
+        this.userRepository = userRepository;
     }
 
-    // Create a request for a specific user
     @PostMapping("/{userId}")
-    public ResourceRequest createRequest(@PathVariable Long userId,
-                                         @RequestBody ResourceRequest request) {
-        return service.createRequest(userId, request);
-    }
+    public ResourceRequest createRequest(
+            @PathVariable Long userId,
+            @RequestBody ResourceRequest request) {
 
-    // Get all requests by a user
-    @GetMapping("/user/{userId}")
-    public List<ResourceRequest> getRequestsByUser(@PathVariable Long userId) {
-        return repository.findByRequestedBy_Id(userId);
-    }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    // Get a request by ID
-    @GetMapping("/{id}")
-    public ResourceRequest getRequest(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> 
-                new RuntimeException("Request not found"));
-    }
-
-    // Update status of a request
-    @PutMapping("/status/{requestId}")
-    public ResourceRequest updateStatus(@PathVariable Long requestId,
-                                        @RequestParam String status) {
-        ResourceRequest req = repository.findById(requestId).orElseThrow(() -> 
-                new RuntimeException("Request not found"));
-        req.setStatus(status);   // ✅ This now works with entity setter
-        return repository.save(req);
+        return resourceRequestService.createRequest(request, user);
     }
 }
