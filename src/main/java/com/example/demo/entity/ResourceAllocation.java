@@ -1,9 +1,11 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "resource_allocations")
 public class ResourceAllocation {
 
     @Id
@@ -11,9 +13,11 @@ public class ResourceAllocation {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "resource_id", nullable = false)
     private Resource resource;
 
     @OneToOne
+    @JoinColumn(name = "request_id", unique = true, nullable = false)
     private ResourceRequest request;
 
     private LocalDateTime allocatedAt;
@@ -23,15 +27,29 @@ public class ResourceAllocation {
     private String notes;
 
     @PrePersist
-    public void setAllocatedTime() {
-        if (this.allocatedAt == null) {
-            this.allocatedAt = LocalDateTime.now();
-        }
+    protected void onCreate() {
+        this.allocatedAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    public ResourceAllocation() {
+        // Ensure allocatedAt is set even for non-persisted instances (unit tests)
+        this.allocatedAt = LocalDateTime.now();
+    }
+
+    public ResourceAllocation(Resource resource, ResourceRequest request, Boolean conflictFlag, String notes) {
+        this.resource = resource;
+        this.request = request;
+        this.conflictFlag = conflictFlag;
+        this.notes = notes;
+        this.allocatedAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Resource getResource() {
